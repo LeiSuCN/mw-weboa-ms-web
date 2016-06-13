@@ -106,7 +106,7 @@ class NoticeEditor extends Component {
               label="附件"
               labelCol={{span:1}}
               wrapperCol={{span:23}}>
-              <Upload action="http://mw-weboa.oss-cn-shenzhen.aliyuncs.com"  data={this.uploadFileWithKey.bind(this)} onChange={this.uploadSucc.bind(this)}  beforeUpload={this.getFileKey.bind(this)}  >
+              <Upload ref="cmpUpload" action="http://mw-weboa.oss-cn-shenzhen.aliyuncs.com"  data={this.uploadFileWithKey.bind(this)} beforeUpload={this.getFileKey.bind(this)}  >
                 <Button type="ghost">
                   <Icon type="upload" />点击上传
                </Button>
@@ -148,7 +148,6 @@ class NoticeEditor extends Component {
   }
 
   uploadFileWithKey(file) {
-    console.log( file )
     if( this.state.filetoken ){
       this.state.filetoken.key = file.uid;
       return this.state.filetoken;
@@ -157,7 +156,7 @@ class NoticeEditor extends Component {
 
   getFileKey(file) {
 
-    if( this.state.filetoken ) {
+    if( false && this.state.filetoken ) {
       return true;
     } else{
     return new Promise( (resolve, reject) => {
@@ -194,36 +193,26 @@ class NoticeEditor extends Component {
     let notice = false;
     let form = this.props.form;
     form.validateFields( (errors, values) => {
-      console.log( errors )
-
       if( errors ) {
         return ;
       }
-      console.log( values )
-
-       notice = Object.assign({ }, values);
+      notice = Object.assign({ }, values);
     })
 
     if( !notice ) {
       return
     }
 
+    // attachments
+    notice.attachments = [];
+    this.refs.cmpUpload.state.fileList.forEach( file => notice.attachments.push( file.uid ) );
+    // content
     var content = this.state.editorState.getCurrentContent();
-
     if( content.hasText() ) {
       notice.content = stateToHTML(content);
     }
+    
     console.log( notice );
-  }
-
-  builderOrder() {
-
-
-  }
-
-  uploadSucc(ret, file) {
-    console.log( ret )
-    console.log( file )
   }
 }
 
