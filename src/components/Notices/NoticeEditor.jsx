@@ -6,8 +6,6 @@ import {stateToHTML} from 'draft-js-export-html';
 import MainLayout from '../../layouts/MainLayout/MainLayout';
 import styles from './NoticeEditor.less';
 
-
-
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -203,14 +201,29 @@ class NoticeEditor extends Component {
       return
     }
 
+    // receivers
+    notice.receivers = [{name:1, value:notice.receiver}];
+    delete notice.receiver;
     // attachments
     notice.attachments = [];
-    this.refs.cmpUpload.state.fileList.forEach( file => notice.attachments.push( file.uid ) );
+    this.refs.cmpUpload.state.fileList.forEach( file => notice.attachments.push( {name: file.name, value:file.uid} ) );
     // content
     var content = this.state.editorState.getCurrentContent();
     if( content.hasText() ) {
       notice.content = stateToHTML(content);
     }
+    notice = JSON.stringify(notice)
+    ifetch('//localhost:18080/notice',{mode:'cors', method:'post', body:notice}).then(
+     resp => {
+       let json = resp.json();
+       if( json && json.then ){
+         json.then( _json => {console.log(_json)} );
+       } else if( json ){
+         console.log(json);
+       }
+     } 
+   )
+        
     
     console.log( notice );
   }
