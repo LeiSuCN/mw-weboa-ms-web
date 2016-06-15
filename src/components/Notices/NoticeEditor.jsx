@@ -40,17 +40,22 @@ class NoticeEditor extends Component {
     });
 
      let typeProps = getFieldProps('type', {
-      initialValue: "3",
-      rules:[
-        { required: true, message: '请选择重要度'}
-      ]
+      initialValue: "3"
     });
 
    let validityProps = getFieldProps('validity', {
       initialValue: "0"
     });
 
-   
+  
+    let noticeContentClassName = styles.notice_content;
+    var contentState = this.state.editorState.getCurrentContent();
+    if (!contentState.hasText()) {
+      if (contentState.getBlockMap().first().getType() !== 'unstyled') {
+        noticeContentClassName += ' RichEditor-hidePlaceholder';
+      }
+    }
+ 
     
     return (
       <Form horizontal form={this.props.form} className={styles.notice_editor}>
@@ -93,15 +98,15 @@ class NoticeEditor extends Component {
         </Row> 
         <Row>
           <Col span="24">
-            <div className = {styles.notice_content} >
-              <Editor editorState={this.state.editorState} placeholder1="请输入通知内容" onChange={this.editorChange.bind(this)} blockStyleFn={ () => styles.notice_content_block }  />
+            <div className = {noticeContentClassName} >
+              <Editor editorState={this.state.editorState} placeholder="请在下面输入通知内容：" onChange={this.editorChange.bind(this)} blockStyleFn={ () => styles.notice_content_block }  />
             </div>
           </Col>
         </Row>
-         <Row>
+         <Row style={{marginTop:'2em', paddingTop:'1em'}} className={styles.item_block} >
           <Col span="24">
              <FormItem
-              label="附件"
+              label="附&nbsp;&nbsp;&nbsp;&nbsp;件"
               labelCol={{span:1}}
               wrapperCol={{span:23}}>
               <Upload ref="cmpUpload" action="http://mw-weboa.oss-cn-shenzhen.aliyuncs.com"  data={this.uploadFileWithKey.bind(this)} beforeUpload={this.getFileKey.bind(this)}  >
@@ -112,7 +117,7 @@ class NoticeEditor extends Component {
             </FormItem>
          </Col>
         </Row>
-         <Row>
+         <Row className={styles.item_block} >
           <Col span="24">
              <FormItem
               label="重要度"
@@ -126,7 +131,7 @@ class NoticeEditor extends Component {
             </FormItem>
          </Col>
         </Row>
-         <Row>
+         <Row className={styles.item_block} >
           <Col span="24">
              <FormItem
               label="有效期"
@@ -136,9 +141,9 @@ class NoticeEditor extends Component {
             </FormItem>
          </Col>
         </Row>
-        <Row>
-          <Col span="24">
-            <Button onClick={this.commit.bind(this)}   htmlType='submit'>提交</Button>
+        <Row className={styles.item_block} style={{paddingBottom:'1em'}} >
+          <Col span="24" style={{textAlign:'center'}}>
+            <Button onClick={this.commit.bind(this)} type="primary" size="large"  htmlType='submit'>提交</Button>
          </Col>
         </Row>
       </Form>
